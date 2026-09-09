@@ -3,20 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>운명의 서(書) : 마법 고서</title>
+    <title>운명의 서(書) : 비짓서울 마법 고서</title>
     <!-- 고서 느낌을 살리기 위한 구글 폰트 (고운 바탕체) -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&display=swap" rel="stylesheet">
     
     <style>
-        /* 기본 스타일 및 양피지 질감 테마 */
         body, html {
             margin: 0;
             padding: 0;
             width: 100%;
             height: 100%;
-            background-color: #1a1614; /* 낡은 가죽 배경 느낌 */
+            background-color: #1a1614;
             font-family: 'Gowun Batang', serif;
             color: #dcd0c0;
             overflow: hidden;
@@ -25,7 +24,6 @@
             align-items: center;
         }
 
-        /* 중앙 책(태블릿) 영역 */
         #book-container {
             width: 100%;
             max-width: 600px;
@@ -40,7 +38,6 @@
             text-align: center;
         }
 
-        /* 각 페이지 공통 속성 */
         .page {
             display: none;
             flex-direction: column;
@@ -56,10 +53,9 @@
             display: flex;
         }
 
-        /* 랜딩 페이지 전용 */
         .title {
-            font-size: 2.5rem;
-            color: #d4af37; /* 금박 느낌 */
+            font-size: 2.2rem;
+            color: #d4af37;
             margin-bottom: 20px;
             letter-spacing: 5px;
             text-shadow: 0 0 10px rgba(212, 175, 55, 0.5);
@@ -73,11 +69,10 @@
             cursor: pointer;
         }
 
-        /* 질문 페이지 전용 */
         .question-text {
-            font-size: 1.5rem;
+            font-size: 1.4rem;
             line-height: 1.8;
-            margin-bottom: 40px;
+            margin-bottom: 30px;
             color: #e6dec3;
         }
 
@@ -86,13 +81,14 @@
             border: 1px solid #d4af37;
             color: #d4af37;
             font-family: 'Gowun Batang', serif;
-            font-size: 1.1rem;
+            font-size: 1.05rem;
             padding: 15px 20px;
             margin: 10px 0;
             width: 100%;
             cursor: pointer;
             transition: all 0.3s ease;
             box-shadow: 0 0 5px rgba(212, 175, 55, 0.2);
+            text-align: left;
         }
 
         .choice-btn:hover, .choice-btn:active {
@@ -101,38 +97,38 @@
             box-shadow: 0 0 15px rgba(212, 175, 55, 0.6);
         }
 
-        /* 로딩(마법 효과) 페이지 전용 */
         .loading-text {
             font-size: 1.3rem;
             color: #d4af37;
             animation: pulse 1s infinite;
         }
 
-        /* 결과 페이지 전용 */
         .result-title {
-            font-size: 2rem;
+            font-size: 1.8rem;
             color: #d4af37;
             margin-bottom: 10px;
         }
 
         .result-desc {
-            font-size: 1.2rem;
+            font-size: 1.1rem;
             line-height: 1.6;
-            margin-bottom: 30px;
+            margin-bottom: 20px;
             color: #c7bea9;
+            max-height: 200px;
+            overflow-y: auto;
         }
 
         .qr-code {
-            width: 150px;
-            height: 150px;
+            width: 130px;
+            height: 130px;
             background-color: white;
-            padding: 10px;
-            margin-bottom: 20px;
+            padding: 8px;
+            margin-bottom: 15px;
             border-radius: 10px;
         }
 
         .reset-btn {
-            margin-top: 30px;
+            margin-top: 20px;
             background: none;
             border: none;
             color: #888;
@@ -141,7 +137,6 @@
             cursor: pointer;
         }
 
-        /* 애니메이션 */
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(10px); }
             to { opacity: 1; transform: translateY(0); }
@@ -160,38 +155,37 @@
         
         <!-- 1. 랜딩 페이지 -->
         <div id="page-landing" class="page active" onclick="goToQuestion()">
-            <div class="title">運 命 의  書</div>
-            <div style="font-size: 1rem; color: #888;">당신을 기다리고 있었습니다.</div>
+            <div class="title">運 命 의  書 : SEOUL</div>
+            <div style="font-size: 0.95rem; color: #888;">서울의 오래된 골목과 핫플레이스 사이, 당신을 위한 기록.</div>
             <div class="touch-text">화면을 터치하여 책장을 넘기세요</div>
         </div>
 
         <!-- 2. 질문 페이지 -->
         <div id="page-question" class="page">
             <div class="question-text">
-                지친 여행자의 발걸음을 멈추게 할,<br>오늘 밤 당신의 운명을 바꿀 단 한 끼의 맛은<br>이미 정해져 있다.
+                지친 여행자의 발걸음을 멈추게 할,<br>오늘 밤 당신의 운명을 바꿀 단 한 곳의 서울은<br>이미 정해져 있다.
             </div>
-            <button class="choice-btn" onclick="makeChoice('warm')">
-                [1] 속까지 진하게 위로받을 '로컬 노포의 온기'
+            <button class="choice-btn" onclick="makeChoice('alley')">
+                [1] 고요한 역사와 온기가 숨쉬는 '서울의 오래된 골목'
             </button>
-            <button class="choice-btn" onclick="makeChoice('sea')">
-                [2] 짜릿한 일탈을 꿈꾸는 '부산 바다의 맛'
+            <button class="choice-btn" onclick="makeChoice('hotplace')">
+                [2] 트렌디한 감각이 부딪히는 '서울의 핫플레이스'
             </button>
         </div>
 
-        <!-- 3. 로딩(마법/AI 탐색) 페이지 -->
+        <!-- 3. 로딩 페이지 -->
         <div id="page-loading" class="page">
-            <div class="loading-text">운명의 페이지를 넘기고 있습니다...</div>
+            <div class="loading-text">비짓서울(Visit Seoul) API에서<br>운명의 장소를 탐색하고 있습니다...</div>
         </div>
 
         <!-- 4. 결과 페이지 -->
         <div id="page-result" class="page">
-            <div id="result-title" class="result-title">식당 이름</div>
-            <div id="result-desc" class="result-desc">식당에 대한 감성적인 스토리텔링 설명이 들어갑니다.</div>
+            <div id="result-title" class="result-title">장소 이름</div>
+            <div id="result-desc" class="result-desc">API 데이터 기반 설명이 들어갑니다.</div>
             
-            <div style="font-size: 0.9rem; color: #d4af37; margin-bottom: 10px;">이 고서가 준비한 특별한 선물</div>
-            <!-- 임시 QR 코드 이미지 (api.qrserver 활용) -->
-            <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=BusanLocalDiscount" alt="할인 쿠폰 QR" class="qr-code">
-            <div style="font-size: 0.8rem; color: #888;">QR을 스캔하여 할인 쿠폰과 길 안내를 받으세요</div>
+            <div style="font-size: 0.85rem; color: #d4af37; margin-bottom: 8px;">이 고서가 준비한 길 안내 및 상생 혜택</div>
+            <img src="https://api.qrserver.com/v1/create-qr-code/?size=130x130&data=VisitSeoulAI" alt="길 안내 QR" class="qr-code">
+            <div style="font-size: 0.75rem; color: #888;">QR을 스캔하여 모바일 상세 길 안내를 받으세요</div>
 
             <button class="reset-btn" onclick="resetBook()">다시 책장 덮기 (초기화)</button>
         </div>
@@ -199,47 +193,46 @@
     </div>
 
     <script>
-        // 페이지 전환 함수
+        // 여기에 비짓서울 API 키를 입력하세요[cite: 7]
+        const API_KEY = "YOUR_VISIT_SEOUL_API_KEY_HERE"; 
+
         function showPage(pageId) {
-            // 모든 페이지 숨기기
             document.querySelectorAll('.page').forEach(page => {
                 page.classList.remove('active');
             });
-            // 특정 페이지만 보이기
             document.getElementById(pageId).classList.add('active');
         }
 
-        // 1 -> 2: 랜딩에서 터치 시 질문으로
         function goToQuestion() {
             showPage('page-question');
         }
 
-        // 2 -> 3 -> 4: 선택 후 로딩, 그리고 결과 출력
-        function makeChoice(type) {
+        async function makeChoice(type) {
             showPage('page-loading');
 
-            // 실제 개발 시 이곳에 비짓서울 API 또는 공공데이터 AI 호출 로직이 들어갑니다.
-            // 현재는 시연을 위해 setTimeout으로 2.5초 뒤 결과가 나오도록 시뮬레이션 합니다.
+            // [안내] 비짓서울 API 연동 지점
+            // 실제 구현 시 아래 영역에서 fetch('비짓서울_API_URL?apiKey=' + API_KEY)를 호출하여 
+            // 응답받은 서울 관광/맛집 데이터를 파싱하고 AI 알고리즘으로 필터링하게 됩니다[cite: 7].
+
             setTimeout(() => {
                 let title = "";
                 let desc = "";
 
-                if (type === 'warm') {
-                    title = "할매 뚝배기 국밥";
-                    desc = "60년 세월 동안 골목 끝자락을 지켜온 따뜻한 온기.<br>오늘 하루 당신의 지친 마음을 뽀얗고 진한 국물이 빈틈없이 위로해 줄 것입니다.<br>포털 검색으로는 절대 찾을 수 없는 진짜 부산 사람들의 안식처입니다.";
-                } else if (type === 'sea') {
-                    title = "영도 해녀의 집";
-                    desc = "파도 소리가 혀끝에 닿는 짜릿한 순간.<br>화려한 간판은 없지만, 오늘 갓 건져 올린 싱싱한 바다의 맛이 당신의 심장을 뛰게 할 것입니다.<br>관광객의 발길이 닿지 않은 이곳이 당신의 운명입니다.";
+                if (type === 'alley') {
+                    title = "익선동 한옥거리 & 노포 초원식당";
+                    desc = "빌딩 숲 사이에 숨겨진 100년의 시간 고스란히 담긴 골목.<br>비짓서울 API가 추천하는 고즈넉한 한옥 감성과 따뜻한 국물이 지친 여행자의 마음을 온전히 채워줍니다.";
+                } else if (type === 'hotplace') {
+                    title = "성수동 카페거리 & 연무장길";
+                    desc = "가장 트렌디한 에너지가 폭발하는 서울의 성지.<br>붉은 벽돌 창고와 감각적인 쇼핑가가 어우러져 당신의 오감을 깨울 짜릿한 일탈을 선물합니다.";
                 }
 
                 document.getElementById('result-title').innerHTML = title;
                 document.getElementById('result-desc').innerHTML = desc;
 
                 showPage('page-result');
-            }, 2500); // 2.5초 대기
+            }, 2000);
         }
 
-        // 초기화
         function resetBook() {
             showPage('page-landing');
         }
