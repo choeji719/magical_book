@@ -35,6 +35,18 @@
             display: flex;
             flex-direction: column;
             text-align: center;
+            transition: filter 0.3s ease;
+        }
+
+        /* 마법 빛 터지는 연출 애니메이션 */
+        @keyframes magicFlash {
+            0% { filter: brightness(1); box-shadow: 0 0 50px rgba(0,0,0,0.8); background: #2c211a; }
+            30% { filter: brightness(2.8); box-shadow: 0 0 120px #fff, 0 0 200px #d4af37; background: #fffde6; color: #1a1614; }
+            100% { filter: brightness(1); box-shadow: 0 0 50px rgba(0,0,0,0.8); background: #2c211a; }
+        }
+
+        .flash-effect {
+            animation: magicFlash 0.7s ease-out;
         }
 
         /* 1분 타임아웃 경고창 */
@@ -58,7 +70,7 @@
 
         /* 뒤로가기 버튼 */
         .back-btn {
-            display: none; /* 랜딩 페이지에선 숨김 */
+            display: none;
             position: absolute;
             top: 25px;
             left: 25px;
@@ -117,6 +129,13 @@
             color: #e6dec3;
         }
 
+        .choices-container {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
         .choice-btn {
             background-color: transparent;
             border: 1px solid #d4af37;
@@ -124,7 +143,6 @@
             font-family: 'Gowun Batang', serif;
             font-size: 1.05rem;
             padding: 15px 20px;
-            margin: 10px 0;
             width: 100%;
             cursor: pointer;
             transition: all 0.3s ease;
@@ -239,14 +257,10 @@
         <!-- 2. 질문 페이지 -->
         <div id="page-question" class="page">
             <div class="question-text">
-                어디로 가야 할지 헤매는 여행자여,<br>오늘 밤 당신의 운명을 바꿀 단 한 끼의 식사는<br>이미 정해져 있다.
+                어디로 가야 할지 헤매는 여행자여,<br>오늘 밤 당신의 운명을 바꿀 서울의 단 한 곳은<br>이미 정해져 있다. 당신의 영혼이 이끌리는 쪽은?
             </div>
-            <button class="choice-btn" onclick="makeChoice('alley')">
-                [1] 세월이 끓여낸 깊은 위로, '오래된 골목의 노포 맛집'
-            </button>
-            <button class="choice-btn" onclick="makeChoice('hotplace')">
-                [2] 새로운 감각을 깨우는 미식, '핫플레이스의 트렌디한 식당'
-            </button>
+            <!-- 랜덤으로 2개의 선택지가 동적으로 채워지는 영역 -->
+            <div id="choices-container" class="choices-container"></div>
         </div>
 
         <!-- 3. 로딩 페이지 -->
@@ -276,17 +290,44 @@
     </div>
 
     <script>
+        // 총 5개의 선택지 풀 (Pool)
+        const optionsPool = [
+            {
+                text: "세월이 끓여낸 깊은 위로, '오래된 골목의 노포 맛집'",
+                title: "종로 청진옥",
+                desc: "빌딩 숲 사이에 숨겨진 1937년 개업 이래의 뚝심.<br>비짓서울 실시간 혼잡도 분석 결과, 지금 가장 여유롭게 식사할 수 있는 곳입니다. 뽀얗게 우려낸 따뜻한 해장국 한 그릇이 지친 여행자의 마음을 온전히 채워줍니다."
+            },
+            {
+                text: "새로운 감각을 깨우는 미식, '핫플레이스의 트렌디한 식당'",
+                title: "성수 소문난 성수 감자탕",
+                desc: "가장 트렌디한 에너지가 폭발하는 성수동의 진정한 소울푸드.<br>현재 당신의 위치에서 도보 이동이 가장 효율적인 로컬 핫플레이스로, 감각적인 거리 풍경과 함께 짜릿한 미식의 일탈을 선물합니다."
+            },
+            {
+                text: "도심 속 초록빛 휴식, '탁 트인 뷰의 루프탑 카페'",
+                title: "이태원 남산뷰 테라스",
+                desc: "복잡한 도심을 벗어나 남산의 사계절을 한눈에 담을 수 있는 공간.<br>비짓서울 API가 추천하는 여유로운 힐링 스폿에서 평온한 휴식을 만끽하세요."
+            },
+            {
+                text: "활기찬 시장의 숨은 보물, '전통 시장 속 로컬 미식'",
+                title: "광장시장 부촌육회",
+                desc: "수십 년 전통의 활기가 가득한 시장 골목.<br>비짓서울 API가 엄선한 시장 속 숨은 명소에서 오감이 즐거워지는 특별한 미식을 경험하세요."
+            },
+            {
+                text: "서울의 밤을 밝히는 야경, '로맨틱한 한강변 다이닝'",
+                title: "여의도 야경 테라스",
+                desc: "한강의 반짝이는 물결과 야경을 배경으로 펼쳐지는 로맨틱한 미식의 밤.<br>도시의 야경이 당신의 저녁을 특별하게 물들입니다."
+            }
+        ];
+
         let currentPage = 'page-landing';
         let idleTime = 60; // 60초 타임아웃
         let idleInterval;
 
-        // 1분 무반응 자동 초기화 및 카운트다운 로직
         function resetIdleTimer() {
             idleTime = 60;
             document.getElementById('timeout-warning').style.display = 'none';
             clearInterval(idleInterval);
             
-            // 랜딩 페이지가 아닐 때만 타이머 작동
             if (currentPage !== 'page-landing') {
                 idleInterval = setInterval(timerIncrement, 1000);
             }
@@ -295,23 +336,36 @@
         function timerIncrement() {
             idleTime--;
             if (idleTime <= 10 && idleTime > 0) {
-                // 10초 남았을 때 경고창 표시
                 document.getElementById('timeout-warning').style.display = 'block';
                 document.getElementById('countdown-text').innerText = idleTime;
             } else if (idleTime <= 0) {
-                // 0초가 되면 랜딩페이지로 초기화
                 resetBook();
             }
         }
 
-        // 사용자의 마우스, 터치, 키보드 입력이 감지되면 타이머 리셋
         window.onload = resetIdleTimer;
         document.onmousemove = resetIdleTimer;
         document.onkeypress = resetIdleTimer;
         document.onclick = resetIdleTimer;
         document.ontouchstart = resetIdleTimer;
 
-        // 페이지 전환 및 뒤로가기 제어 함수
+        // 5개 중 무작위로 2개를 골라 질문 페이지에 렌더링하는 함수
+        function loadRandomChoices() {
+            let shuffled = [...optionsPool].sort(() => 0.5 - Math.random());
+            let selected = shuffled.slice(0, 2);
+
+            let container = document.getElementById('choices-container');
+            container.innerHTML = '';
+
+            selected.forEach((item, index) => {
+                let btn = document.createElement('button');
+                btn.className = 'choice-btn';
+                btn.innerHTML = `[${index + 1}] ${item.text}`;
+                btn.onclick = () => makeChoice(item);
+                container.appendChild(btn);
+            });
+        }
+
         function showPage(pageId) {
             document.querySelectorAll('.page').forEach(page => {
                 page.classList.remove('active');
@@ -319,7 +373,6 @@
             document.getElementById(pageId).classList.add('active');
             currentPage = pageId;
 
-            // 랜딩 페이지와 로딩 페이지에서는 뒤로가기 버튼 숨김
             const backBtn = document.getElementById('back-btn');
             if (pageId === 'page-landing' || pageId === 'page-loading') {
                 backBtn.style.display = 'none';
@@ -330,40 +383,36 @@
             resetIdleTimer();
         }
 
-        // 뒤로가기 로직
         function goBack() {
             if (currentPage === 'page-question') {
                 showPage('page-landing');
             } else if (currentPage === 'page-result') {
                 showPage('page-question');
+                loadRandomChoices(); // 질문으로 돌아올 때도 선택지를 새로고침
             }
         }
 
         function goToQuestion() {
+            loadRandomChoices(); // 질문 페이지 진입 시 랜덤 2개 로드
             showPage('page-question');
         }
 
-        // 결과 생성 (AI 시뮬레이션)
-        function makeChoice(type) {
-            showPage('page-loading');
+        // 선택 시 마법 빛 터지는 연출 및 결과 매칭
+        function makeChoice(selectedOption) {
+            const container = document.getElementById('book-container');
+            container.classList.add('flash-effect');
 
             setTimeout(() => {
-                let title = "";
-                let desc = "";
+                container.classList.remove('flash-effect');
+                showPage('page-loading');
 
-                if (type === 'alley') {
-                    title = "종로 청진옥";
-                    desc = "빌딩 숲 사이에 숨겨진 1937년 개업 이래의 뚝심.<br>비짓서울 실시간 혼잡도 분석 결과, 지금 가장 여유롭게 식사할 수 있는 곳입니다. 뽀얗게 우려낸 따뜻한 해장국 한 그릇이 지친 여행자의 마음을 온전히 채워줍니다.";
-                } else if (type === 'hotplace') {
-                    title = "성수 소문난 성수 감자탕";
-                    desc = "가장 트렌디한 에너지가 폭발하는 성수동의 진정한 소울푸드.<br>현재 당신의 위치에서 도보 이동이 가장 효율적인 로컬 핫플레이스로, 감각적인 거리 풍경과 함께 짜릿한 미식의 일탈을 선물합니다.";
-                }
+                setTimeout(() => {
+                    document.getElementById('result-title').innerHTML = selectedOption.title;
+                    document.getElementById('result-desc').innerHTML = selectedOption.desc;
 
-                document.getElementById('result-title').innerHTML = title;
-                document.getElementById('result-desc').innerHTML = desc;
-
-                showPage('page-result');
-            }, 2500); // 2.5초 로딩 (API 호출 시간 연출)
+                    showPage('page-result');
+                }, 2500);
+            }, 700); // 빛 터지는 연출 시간 일치
         }
 
         function resetBook() {
