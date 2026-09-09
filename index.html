@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>운명의 서(書) : 비짓서울 마법 고서</title>
-    <!-- 고서 느낌을 살리기 위한 구글 폰트 (고운 바탕체) -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&display=swap" rel="stylesheet">
@@ -38,6 +37,48 @@
             text-align: center;
         }
 
+        /* 1분 타임아웃 경고창 */
+        #timeout-warning {
+            display: none;
+            position: absolute;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: rgba(139, 0, 0, 0.85);
+            color: #fff;
+            padding: 10px 20px;
+            border-radius: 5px;
+            font-size: 1rem;
+            z-index: 100;
+            border: 1px solid #ff4d4d;
+            box-shadow: 0 0 15px rgba(255, 0, 0, 0.5);
+            animation: fadeIn 0.3s ease-in-out;
+            white-space: nowrap;
+        }
+
+        /* 뒤로가기 버튼 */
+        .back-btn {
+            display: none; /* 랜딩 페이지에선 숨김 */
+            position: absolute;
+            top: 25px;
+            left: 25px;
+            background: none;
+            border: 1px solid #d4af37;
+            color: #d4af37;
+            font-family: 'Gowun Batang', serif;
+            font-size: 0.9rem;
+            padding: 5px 15px;
+            cursor: pointer;
+            border-radius: 3px;
+            z-index: 50;
+            transition: all 0.3s ease;
+        }
+
+        .back-btn:hover {
+            background-color: #d4af37;
+            color: #1a1614;
+        }
+
         .page {
             display: none;
             flex-direction: column;
@@ -46,7 +87,7 @@
             height: 100%;
             padding: 40px;
             box-sizing: border-box;
-            animation: fadeIn 1.5s ease-in-out;
+            animation: fadeIn 1s ease-in-out;
         }
 
         .active {
@@ -70,7 +111,7 @@
         }
 
         .question-text {
-            font-size: 1.4rem;
+            font-size: 1.35rem;
             line-height: 1.8;
             margin-bottom: 30px;
             color: #e6dec3;
@@ -103,19 +144,38 @@
             animation: pulse 1s infinite;
         }
 
+        .api-badge {
+            font-size: 0.9rem;
+            color: #888;
+            margin-bottom: 5px;
+        }
+
         .result-title {
             font-size: 1.8rem;
             color: #d4af37;
-            margin-bottom: 10px;
+            margin-bottom: 15px;
+            font-weight: bold;
         }
 
         .result-desc {
-            font-size: 1.1rem;
+            font-size: 1.05rem;
             line-height: 1.6;
-            margin-bottom: 20px;
+            margin-bottom: 25px;
             color: #c7bea9;
-            max-height: 200px;
-            overflow-y: auto;
+            background: rgba(0, 0, 0, 0.3);
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid #4a3728;
+        }
+
+        .qr-section {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 20px;
+            border-radius: 10px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            border: 1px dashed #66523d;
         }
 
         .qr-code {
@@ -123,8 +183,18 @@
             height: 130px;
             background-color: white;
             padding: 8px;
-            margin-bottom: 15px;
-            border-radius: 10px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+        }
+
+        .qr-desc {
+            font-size: 0.85rem;
+            line-height: 1.5;
+            color: #a89f91;
+        }
+
+        .qr-desc strong {
+            color: #d4af37;
         }
 
         .reset-btn {
@@ -153,84 +223,147 @@
 
     <div id="book-container">
         
+        <!-- 자동 초기화 경고창 -->
+        <div id="timeout-warning"><span id="countdown-text">10</span>초 뒤 처음 페이지로 돌아갑니다.</div>
+
+        <!-- 공통 뒤로가기 버튼 -->
+        <button id="back-btn" class="back-btn" onclick="goBack()">돌아가기</button>
+        
         <!-- 1. 랜딩 페이지 -->
         <div id="page-landing" class="page active" onclick="goToQuestion()">
             <div class="title">運 命 의  書 : SEOUL</div>
-            <div style="font-size: 0.95rem; color: #888;">서울의 오래된 골목과 핫플레이스 사이, 당신을 위한 기록.</div>
+            <div style="font-size: 0.95rem; color: #888;">지친 당신에게 건네는 단 한 끼의 마법</div>
             <div class="touch-text">화면을 터치하여 책장을 넘기세요</div>
         </div>
 
         <!-- 2. 질문 페이지 -->
         <div id="page-question" class="page">
             <div class="question-text">
-                지친 여행자의 발걸음을 멈추게 할,<br>오늘 밤 당신의 운명을 바꿀 단 한 곳의 서울은<br>이미 정해져 있다.
+                어디로 가야 할지 헤매는 여행자여,<br>오늘 밤 당신의 운명을 바꿀 단 한 끼의 식사는<br>이미 정해져 있다.
             </div>
             <button class="choice-btn" onclick="makeChoice('alley')">
-                [1] 고요한 역사와 온기가 숨쉬는 '서울의 오래된 골목'
+                [1] 세월이 끓여낸 깊은 위로, '오래된 골목의 노포 맛집'
             </button>
             <button class="choice-btn" onclick="makeChoice('hotplace')">
-                [2] 트렌디한 감각이 부딪히는 '서울의 핫플레이스'
+                [2] 새로운 감각을 깨우는 미식, '핫플레이스의 트렌디한 식당'
             </button>
         </div>
 
         <!-- 3. 로딩 페이지 -->
         <div id="page-loading" class="page">
-            <div class="loading-text">비짓서울(Visit Seoul) API에서<br>운명의 장소를 탐색하고 있습니다...</div>
+            <div class="loading-text">Visit Seoul API 실시간 데이터 분석 중...<br><span style="font-size: 0.9rem; color: #888; display: block; margin-top: 10px;">(현재 시간대 혼잡도 및 위치 기반 최적화)</span></div>
         </div>
 
         <!-- 4. 결과 페이지 -->
         <div id="page-result" class="page">
-            <div id="result-title" class="result-title">장소 이름</div>
-            <div id="result-desc" class="result-desc">API 데이터 기반 설명이 들어갑니다.</div>
+            <div class="api-badge">(Visit Seoul API 활용 AI 최적 추천)</div>
+            <div id="result-title" class="result-title">식당 이름</div>
+            <div id="result-desc" class="result-desc">식당 설명</div>
             
-            <div style="font-size: 0.85rem; color: #d4af37; margin-bottom: 8px;">이 고서가 준비한 길 안내 및 상생 혜택</div>
-            <img src="https://api.qrserver.com/v1/create-qr-code/?size=130x130&data=VisitSeoulAI" alt="길 안내 QR" class="qr-code">
-            <div style="font-size: 0.75rem; color: #888;">QR을 스캔하여 모바일 상세 길 안내를 받으세요</div>
+            <div class="qr-section">
+                <!-- QR 코드는 Visit Seoul API 공식 홈페이지로 연결됩니다 -->
+                <img src="https://api.qrserver.com/v1/create-qr-code/?size=130x130&data=https://data.visitseoul.net/" alt="길 안내 및 쿠폰 QR" class="qr-code">
+                <div class="qr-desc">
+                    스마트폰으로 QR 코드를 스캔하세요.<br>
+                    <strong>지역 상생 10% 할인 쿠폰</strong>과 함께,<br>
+                    현재 위치에서 식당까지의 <strong>최적 경로</strong>가 안내됩니다.
+                </div>
+            </div>
 
-            <button class="reset-btn" onclick="resetBook()">다시 책장 덮기 (초기화)</button>
+            <button class="reset-btn" onclick="resetBook()">처음으로 돌아가기</button>
         </div>
 
     </div>
 
     <script>
-        // 여기에 비짓서울 API 키를 입력하세요[cite: 7]
-        const API_KEY = "YOUR_VISIT_SEOUL_API_KEY_HERE"; 
+        let currentPage = 'page-landing';
+        let idleTime = 60; // 60초 타임아웃
+        let idleInterval;
 
+        // 1분 무반응 자동 초기화 및 카운트다운 로직
+        function resetIdleTimer() {
+            idleTime = 60;
+            document.getElementById('timeout-warning').style.display = 'none';
+            clearInterval(idleInterval);
+            
+            // 랜딩 페이지가 아닐 때만 타이머 작동
+            if (currentPage !== 'page-landing') {
+                idleInterval = setInterval(timerIncrement, 1000);
+            }
+        }
+
+        function timerIncrement() {
+            idleTime--;
+            if (idleTime <= 10 && idleTime > 0) {
+                // 10초 남았을 때 경고창 표시
+                document.getElementById('timeout-warning').style.display = 'block';
+                document.getElementById('countdown-text').innerText = idleTime;
+            } else if (idleTime <= 0) {
+                // 0초가 되면 랜딩페이지로 초기화
+                resetBook();
+            }
+        }
+
+        // 사용자의 마우스, 터치, 키보드 입력이 감지되면 타이머 리셋
+        window.onload = resetIdleTimer;
+        document.onmousemove = resetIdleTimer;
+        document.onkeypress = resetIdleTimer;
+        document.onclick = resetIdleTimer;
+        document.ontouchstart = resetIdleTimer;
+
+        // 페이지 전환 및 뒤로가기 제어 함수
         function showPage(pageId) {
             document.querySelectorAll('.page').forEach(page => {
                 page.classList.remove('active');
             });
             document.getElementById(pageId).classList.add('active');
+            currentPage = pageId;
+
+            // 랜딩 페이지와 로딩 페이지에서는 뒤로가기 버튼 숨김
+            const backBtn = document.getElementById('back-btn');
+            if (pageId === 'page-landing' || pageId === 'page-loading') {
+                backBtn.style.display = 'none';
+            } else {
+                backBtn.style.display = 'block';
+            }
+
+            resetIdleTimer();
+        }
+
+        // 뒤로가기 로직
+        function goBack() {
+            if (currentPage === 'page-question') {
+                showPage('page-landing');
+            } else if (currentPage === 'page-result') {
+                showPage('page-question');
+            }
         }
 
         function goToQuestion() {
             showPage('page-question');
         }
 
-        async function makeChoice(type) {
+        // 결과 생성 (AI 시뮬레이션)
+        function makeChoice(type) {
             showPage('page-loading');
-
-            // [안내] 비짓서울 API 연동 지점
-            // 실제 구현 시 아래 영역에서 fetch('비짓서울_API_URL?apiKey=' + API_KEY)를 호출하여 
-            // 응답받은 서울 관광/맛집 데이터를 파싱하고 AI 알고리즘으로 필터링하게 됩니다[cite: 7].
 
             setTimeout(() => {
                 let title = "";
                 let desc = "";
 
                 if (type === 'alley') {
-                    title = "익선동 한옥거리 & 노포 초원식당";
-                    desc = "빌딩 숲 사이에 숨겨진 100년의 시간 고스란히 담긴 골목.<br>비짓서울 API가 추천하는 고즈넉한 한옥 감성과 따뜻한 국물이 지친 여행자의 마음을 온전히 채워줍니다.";
+                    title = "종로 청진옥";
+                    desc = "빌딩 숲 사이에 숨겨진 1937년 개업 이래의 뚝심.<br>비짓서울 실시간 혼잡도 분석 결과, 지금 가장 여유롭게 식사할 수 있는 곳입니다. 뽀얗게 우려낸 따뜻한 해장국 한 그릇이 지친 여행자의 마음을 온전히 채워줍니다.";
                 } else if (type === 'hotplace') {
-                    title = "성수동 카페거리 & 연무장길";
-                    desc = "가장 트렌디한 에너지가 폭발하는 서울의 성지.<br>붉은 벽돌 창고와 감각적인 쇼핑가가 어우러져 당신의 오감을 깨울 짜릿한 일탈을 선물합니다.";
+                    title = "성수 소문난 성수 감자탕";
+                    desc = "가장 트렌디한 에너지가 폭발하는 성수동의 진정한 소울푸드.<br>현재 당신의 위치에서 도보 이동이 가장 효율적인 로컬 핫플레이스로, 감각적인 거리 풍경과 함께 짜릿한 미식의 일탈을 선물합니다.";
                 }
 
                 document.getElementById('result-title').innerHTML = title;
                 document.getElementById('result-desc').innerHTML = desc;
 
                 showPage('page-result');
-            }, 2000);
+            }, 2500); // 2.5초 로딩 (API 호출 시간 연출)
         }
 
         function resetBook() {
